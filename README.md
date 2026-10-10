@@ -36,7 +36,7 @@ Unity batch mode testing is also possible with `-batchmode -nographics -projectP
 
 ## Build requirements
 
-Install **Android Build Support, Android SDK, Android NDK and OpenJDK** for the Unity Editor version using Unity Hub. **A local Android debug APK was successfully built** with Unity 6000.6.5f1 on 2026-10-11: IL2CPP ARM64 compilation and Gradle packaging completed, and archive integrity plus the Android v2 debug signature were verified. The prototype debug package is `com.makerparsdev.beltpop.debug` (minimum Android API 26, target API 36, ARM64). **This APK is not a production release and has not been installed or launched on a real Android device.** No Play Console listing, physical device test, revenue or retention measurement is claimed.
+Install **Android Build Support, Android SDK, Android NDK and OpenJDK** for the Unity Editor version using Unity Hub. **A local Android debug APK was successfully built** with Unity 6000.6.5f1 on 2026-10-11: IL2CPP ARM64 compilation and Gradle packaging completed, and archive integrity plus the Android v2 debug signature were verified. The prototype debug package is `com.makerparsdev.beltpop.debug` (minimum Android API 26, target API 36, ARM64). **The ARM64 APK remains available for 64-bit Android devices.** A separate ARMv7 debug APK was built, installed and launched on a physical Android 9 device. First-level layout, RUN/PAUSE/RESUME/RETRY input, failure counters and app background/foreground were smoke-tested. This is not a production release or complete gameplay QA: perfect completion and all twelve physical-device level playthroughs remain unverified. No Play Console listing, revenue or retention measurement is claimed.
 
 The local debug build entry point is `BeltPop.Editor.BeltPopAndroidBuild.BuildDebug`, available through Unity batch mode (when no other Editor has the project open):
 
@@ -44,7 +44,15 @@ The local debug build entry point is `BeltPop.Editor.BeltPopAndroidBuild.BuildDe
 & "<Unity Editor>/Editor/Unity.exe" -batchmode -quit -projectPath "<project>" -buildTarget Android -executeMethod BeltPop.Editor.BeltPopAndroidBuild.BuildDebug -logFile "<build.log>"
 ~~~
 
-This method targets only `Assets/Scenes/BeltPopPrototype.unity`, writes the ignored `Builds/Android/BeltPop-debug.apk`, uses a debug-only app identifier and restores the previous identifier on normal exit. A forced termination can bypass that restore; if interrupted, verify the local Android application identifier in Unity Player Settings. This is not a production-signing, Play publishing or release workflow.
+The regular build method targets only `Assets/Scenes/BeltPopPrototype.unity`, writes the ignored `Builds/Android/BeltPop-debug.apk`, and uses a debug-only application identifier. Both the original identifier and target CPU architecture are restored on normal exit.
+
+For 32-bit ARMv7 test phones, use the separate debug build entry point:
+
+~~~powershell
+& "<Unity Editor>/Editor/Unity.exe" -batchmode -quit -projectPath "<project>" -buildTarget Android -executeMethod BeltPop.Editor.BeltPopAndroidBuild.BuildArmv7Debug -logFile "<build-armv7.log>"
+~~~
+
+This writes `Builds/Android/BeltPop-debug-armv7.apk` (native `armeabi-v7a`) without replacing the ARM64 APK. Confirm the connected device ABIs with `adb shell getprop ro.product.cpu.abilist` before installation. This ARMv7-only artifact is for local testing, not Google Play publication; production releases must also support ARM64. A forced Editor termination may bypass settings restoration, so verify Android Player Settings after an interrupted build.
 
 The optional **CoplayDev MCP for Unity** editor package is referenced in `Packages/manifest.json`. Optional Roslyn tooling downloaded by that package is not part of the game runtime and should not be confused with game source.
 
