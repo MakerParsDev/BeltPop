@@ -13,16 +13,18 @@ namespace BeltPop.Editor
         [MenuItem("BeltPop/Create Playable Prototype Scene")]
         public static void CreatePlayableScene()
         {
+            // Switching to an existing scene in Single mode can discard unsaved edits too.
+            // Check first, before either opening or replacing the current scene.
+            Scene previous = SceneManager.GetActiveScene();
+            if (previous.IsValid() && previous.isDirty)
+            {
+                Debug.LogError("Current Unity scene has unsaved edits. Save it before opening BeltPop prototype.");
+                return;
+            }
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) != null)
             {
                 Debug.LogWarning("BeltPop prototype scene exists. Not overwriting: " + ScenePath);
                 EditorSceneManager.OpenScene(ScenePath);
-                return;
-            }
-            Scene previous = SceneManager.GetActiveScene();
-            if (previous.IsValid() && previous.isDirty)
-            {
-                Debug.LogError("Current Unity scene has unsaved edits. Save it before building BeltPop prototype.");
                 return;
             }
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
