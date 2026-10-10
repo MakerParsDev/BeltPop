@@ -30,13 +30,17 @@ Use **Window > General > Test Runner > EditMode** and run assembly `BeltPop.Edit
 - A deterministic **100%-correct solution trace for each of the twelve levels**.
 - Repeatable score/tick counts, failure paths, input switching, pause, restart, invalid level boundaries, blocked routes and mismatched input ports.
 
-**Current evidence:** 11/11 EditMode tests passed in Unity 6000.6.5f1 on 2026-10-11. Real-player usability review and physical Android device coverage are **not yet verified**.
+**Current evidence:** 11/11 EditMode tests passed in Unity 6000.6.5f1 on 2026-10-11. All twelve levels also passed a scripted end-to-end test on a physical Android 9 ARMv7 device. Human-player usability, accessibility and cross-device performance remain **unverified**.
 
 Unity batch mode testing is also possible with `-batchmode -nographics -projectPath "<project>" -runTests -testPlatform EditMode -testResults "<results.xml>" -logFile "<test.log>"` when no other Editor instance has the project open. Do not append `-quit` to this test command: the Test Runner exits the Editor after writing the XML result.
 
 ## Build requirements
 
-Install **Android Build Support, Android SDK, Android NDK and OpenJDK** for the Unity Editor version using Unity Hub. **A local Android debug APK was successfully built** with Unity 6000.6.5f1 on 2026-10-11: IL2CPP ARM64 compilation and Gradle packaging completed, and archive integrity plus the Android v2 debug signature were verified. The prototype debug package is `com.makerparsdev.beltpop.debug` (minimum Android API 26, target API 36, ARM64). **The ARM64 APK remains available for 64-bit Android devices.** A separate ARMv7 debug APK was built, installed and launched on a physical Android 9 device. First-level layout, RUN/PAUSE/RESUME/RETRY input, failure counters and app background/foreground were smoke-tested. This is not a production release or complete gameplay QA: perfect completion and all twelve physical-device level playthroughs remain unverified. No Play Console listing, revenue or retention measurement is claimed.
+Install **Android Build Support, Android SDK, Android NDK and OpenJDK** for the Unity Editor version using Unity Hub. **A local Android debug APK was successfully built** with Unity 6000.6.5f1 on 2026-10-11: IL2CPP ARM64 compilation and Gradle packaging completed, and archive integrity plus the Android v2 debug signature were verified. The prototype debug package is `com.makerparsdev.beltpop.debug` (minimum Android API 26, target API 36, ARM64).
+
+**The ARM64 APK remains available for 64-bit Android devices.** A separate ARMv7 debug APK was built, installed and launched on a physical Android 9 device. RUN/PAUSE/RESUME/RETRY input, failure counters and app background/foreground were smoke-tested.
+
+On 2026-10-11, timed Android Monkey touch sequences completed all twelve authored puzzles on the physical device: 114/114 correct parcel deliveries, zero wrong deliveries, three stars per level (36/36 total), working NEXT LEVEL transitions, and the final "All 12 puzzles completed!" screen. This validates a real on-device scripted UI/gameplay path, **not** human-player usability, accessibility, sustained performance or a multi-device compatibility matrix. No Play Console listing, revenue or retention measurement is claimed.
 
 The local debug build entry point is `BeltPop.Editor.BeltPopAndroidBuild.BuildDebug`, available through Unity batch mode (when no other Editor has the project open):
 
