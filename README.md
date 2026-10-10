@@ -36,7 +36,7 @@ Unity batch mode testing is also possible with `-batchmode -nographics -projectP
 
 ## Build requirements
 
-Install **Android Build Support, Android SDK, Android NDK and OpenJDK** for the Unity Editor version using Unity Hub. The Android modules have been installed and recognized during local validation, but **no APK/AAB has passed the build gate**: the first batch build stalled during the Unity Android player generation stage and was stopped without an artifact. The next step is to isolate and resolve that build stall. No Play Console listing, physical device test, revenue or retention measurement is claimed.
+Install **Android Build Support, Android SDK, Android NDK and OpenJDK** for the Unity Editor version using Unity Hub. **A local Android debug APK was successfully built** with Unity 6000.6.5f1 on 2026-10-11: IL2CPP ARM64 compilation and Gradle packaging completed, and archive integrity plus the Android v2 debug signature were verified. The prototype debug package is `com.makerparsdev.beltpop.debug` (minimum Android API 26, target API 36, ARM64). **This APK is not a production release and has not been installed or launched on a real Android device.** No Play Console listing, physical device test, revenue or retention measurement is claimed.
 
 The local debug build entry point is `BeltPop.Editor.BeltPopAndroidBuild.BuildDebug`, available through Unity batch mode (when no other Editor has the project open):
 
