@@ -163,6 +163,56 @@ namespace BeltPop.Tests
         }
 
         [Test]
+        public void BlockedRouteEventuallyStallsWithoutGrantingDelivery()
+        {
+            var tiles = new Tile[9];
+            for (int y = 0; y < 3; y++)
+                for (int x = 0; x < 3; x++)
+                    tiles[y * 3 + x] = new Tile(x, y, TileKind.Empty);
+            tiles[3] = new Tile(0, 1, TileKind.Source, output: Direction.East,
+                manifest: new[] { CargoColor.Red });
+            tiles[4] = new Tile(1, 1, TileKind.Belt,
+                input: Direction.West, output: Direction.East);
+            tiles[5] = new Tile(2, 1, TileKind.Wall);
+            tiles[8] = new Tile(2, 2, TileKind.Sink,
+                input: Direction.South, accepts: CargoColor.Red);
+            var game = new Simulation(new Level(4, 3, 3, tiles));
+            game.Start();
+            for (int i = 0; i < 24 && game.Phase == GamePhase.Running; i++)
+                game.Tick();
+            Assert.That(game.Phase, Is.EqualTo(GamePhase.Stalled));
+            Assert.That(game.Correct, Is.Zero);
+            Assert.That(game.Delivered, Is.Zero);
+            Assert.That(game.Stars, Is.Zero);
+            Assert.That(game.CargoAt(1, 1), Is.Not.Null);
+        }
+
+        [Test]
+        public void MismatchedInputPortPreventsSpawningAndEventuallyStalls()
+        {
+            var tiles = new Tile[9];
+            for (int y = 0; y < 3; y++)
+                for (int x = 0; x < 3; x++)
+                    tiles[y * 3 + x] = new Tile(x, y, TileKind.Empty);
+            tiles[3] = new Tile(0, 1, TileKind.Source, output: Direction.East,
+                manifest: new[] { CargoColor.Red });
+            tiles[4] = new Tile(1, 1, TileKind.Belt,
+                input: Direction.North, output: Direction.East);
+            tiles[5] = new Tile(2, 1, TileKind.Sink,
+                input: Direction.West, accepts: CargoColor.Red);
+            var game = new Simulation(new Level(4, 3, 3, tiles));
+            game.Start();
+            for (int i = 0; i < 24 && game.Phase == GamePhase.Running; i++)
+                game.Tick();
+            Assert.That(game.Phase, Is.EqualTo(GamePhase.Stalled));
+            Assert.That(game.CargoAt(0, 1), Is.Null);
+            Assert.That(game.Delivered, Is.Zero);
+            Assert.That(game.QueueSwitch(1, 1), Is.False);
+            game.Restart();
+            Assert.That(game.Phase, Is.EqualTo(GamePhase.Preview));
+        }
+
+        [Test]
         public void ExitResultCannotMoveUntilRestart()
         {
             Simulation game = Solve(1);

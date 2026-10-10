@@ -28,15 +28,23 @@ Use **Window > General > Test Runner > EditMode** and run assembly `BeltPop.Edit
 
 - All twelve manifests, unique board geometries and correct source/sink topology.
 - A deterministic **100%-correct solution trace for each of the twelve levels**.
-- Repeatable score/tick counts, failure paths, input switching, pause, restart and invalid level boundaries.
+- Repeatable score/tick counts, failure paths, input switching, pause, restart, invalid level boundaries, blocked routes and mismatched input ports.
 
-**Current evidence:** 9/9 EditMode tests passed in Unity on 2026-10-10. Real-player usability review and physical Android device coverage are **not yet verified**.
+**Current evidence:** 11/11 EditMode tests passed in Unity 6000.6.5f1 on 2026-10-11. Real-player usability review and physical Android device coverage are **not yet verified**.
 
-Unity batch mode testing is also possible with `-runTests -testPlatform EditMode -testResults <path> -quit` when the project is not locked by another Editor instance.
+Unity batch mode testing is also possible with `-batchmode -nographics -projectPath "<project>" -runTests -testPlatform EditMode -testResults "<results.xml>" -logFile "<test.log>"` when no other Editor instance has the project open. Do not append `-quit` to this test command: the Test Runner exits the Editor after writing the XML result.
 
 ## Build requirements
 
-Android Build Support, Android SDK/NDK and OpenJDK must be installed through Unity Hub to produce an Android APK/AAB. The development machine used for the first slice did **not** have the Android build module installed; no Android binary, Play Console listing, revenue or retention measurements are claimed.
+Install **Android Build Support, Android SDK, Android NDK and OpenJDK** for the Unity Editor version using Unity Hub. The Android modules have been installed and recognized during local validation, but **no APK/AAB has passed the build gate**: the first batch build stalled during the Unity Android player generation stage and was stopped without an artifact. The next step is to isolate and resolve that build stall. No Play Console listing, physical device test, revenue or retention measurement is claimed.
+
+The local debug build entry point is `BeltPop.Editor.BeltPopAndroidBuild.BuildDebug`, available through Unity batch mode (when no other Editor has the project open):
+
+~~~powershell
+& "<Unity Editor>/Editor/Unity.exe" -batchmode -quit -projectPath "<project>" -buildTarget Android -executeMethod BeltPop.Editor.BeltPopAndroidBuild.BuildDebug -logFile "<build.log>"
+~~~
+
+This method targets only `Assets/Scenes/BeltPopPrototype.unity`, writes the ignored `Builds/Android/BeltPop-debug.apk`, uses a debug-only app identifier and restores the previous identifier on normal exit. A forced termination can bypass that restore; if interrupted, verify the local Android application identifier in Unity Player Settings. This is not a production-signing, Play publishing or release workflow.
 
 The optional **CoplayDev MCP for Unity** editor package is referenced in `Packages/manifest.json`. Optional Roslyn tooling downloaded by that package is not part of the game runtime and should not be confused with game source.
 
